@@ -79,20 +79,20 @@ const Chatbot = () => {
                 <img
                     src="/botOpen.png"
                     alt="Chatbot"
-                    className={"cursor-pointer w-32 h-32 rounded-full shadow-2xl"}
+                    className={"cursor-pointer w-20 h-20 rounded-full shadow-2xl"}
                     onClick={toggleChat}
                 />
             ) : (
                 <img
                 src="/botClose.png"
                 alt="Chatbot"
-                className={"cursor-pointer w-32 h-32 rounded-full shadow-2xl"}
+                className={"cursor-pointer w-20 h-20 rounded-full shadow-2xl"}
                 onClick={toggleChat}
                 />
             )}
 
             {chatOpen && (
-                <div className={"flex flex-col absolute bottom-40 w-[24rem] h-[35rem] rounded-xl shadow-2xl bg-blue-100"}>
+                <div className={"flex flex-col absolute bottom-28 w-[24rem] h-[35rem] rounded-xl shadow-2xl bg-blue-100"}>
 
                     <div className="flex flex-row p-2 justify-between items-center bg-gray-600">
                         <div className="flex flex-row items-center">
