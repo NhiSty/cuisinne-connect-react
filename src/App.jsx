@@ -1,4 +1,4 @@
-import './App.css'
+import './styles/App.css'
 import Chatbot from "./components/Chatbot.jsx";
 
 function App() {
@@ -7,11 +7,11 @@ function App() {
     <>
       <div>
           <h1 className="text-3xl font-bold underline">
-              Hello world!
+              Hello tu te connectes!
           </h1>
       </div>
     <div>
-        <Chatbot />
+
     </div>
 
     </>
