@@ -47,7 +47,7 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(import.meta.env.VITE_API_URL + "/chat/send-message", {
+            const response = await fetch(import.meta.env.VITE_API_URL + "/api/send-message", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -84,10 +84,10 @@ const Chatbot = () => {
                 />
             ) : (
                 <img
-                src="/botClose.png"
-                alt="Chatbot"
-                className={"cursor-pointer w-20 h-20 rounded-full shadow-2xl"}
-                onClick={toggleChat}
+                    src="/botClose.png"
+                    alt="Chatbot"
+                    className={"cursor-pointer w-20 h-20 rounded-full shadow-2xl"}
+                    onClick={toggleChat}
                 />
             )}
 
@@ -107,7 +107,7 @@ const Chatbot = () => {
                             </div>
                         </div>
 
-                        <button onClick={resetChat}>
+                        <button onClick={resetChat} className={'bg-white'}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
@@ -142,10 +142,8 @@ const Chatbot = () => {
 
                         {
                             isLoading && (
-                            <div className="flex justify-center items-center">
-                                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-                            </div>
-                        )}
+                                <span className="loading loading-ring loading-md"></span>
+                            )}
                     </div>
 
 
@@ -154,7 +152,7 @@ const Chatbot = () => {
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Aa"
-                            className="flex flex-grow w-3.5 border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+                            className="flex flex-grow w-3.5 border rounded p-2 focus:outline-none focus:ring focus:border-blue-300 bg-white"
                             disabled={isLoading}
                         />
                         <button

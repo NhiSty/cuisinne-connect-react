@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import router from './pages/index.jsx'
-import './index.css'
+import './styles/index.css'
 import Layout from "./components/Layout.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(

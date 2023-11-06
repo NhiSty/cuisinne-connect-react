@@ -4,6 +4,8 @@ import {
 import Home from "./Home.jsx";
 import App from "../App.jsx";
 import Layout from "../components/Layout.jsx";
+import Recipe from "./Recipe.jsx";
+import NotFoundPage from "./NotFoundPage.jsx";
 
 const router = createBrowserRouter([
     {
@@ -17,7 +19,12 @@ const router = createBrowserRouter([
                 path: "/login",
                 element: <App />,
             },
+            {
+                path: "/recettes/:recipeId",
+                element: <Recipe />,
+            }
         ],
+        errorElement: <NotFoundPage />,
     },
 ],);
 
