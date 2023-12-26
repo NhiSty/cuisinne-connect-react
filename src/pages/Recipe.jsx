@@ -1,48 +1,182 @@
-import useSWR from "swr";
-import {useLocation, useNavigation, useParams} from "react-router-dom";
-import '../styles/Recipe.css'
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import RecipeStarsRating from "../components/RecipeStarsRating.jsx";
-import Instructions from "../components/InstrcutionStep.jsx";
+import Instructions from "../components/InstructionStep.jsx";
 import Ingredient from "../components/Ingredients.jsx";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getRecipe } from "../api/recipes.js";
+import {
+  CookingPot,
+  Flame,
+  User,
+  Users,
+  RotateCw,
+  ShoppingBag,
+} from "lucide-react";
+import SimilarRecipes from "../components/SimilarRecipes.jsx";
+import RecipeSideDish from "../components/RecipeSideDish.jsx";
+import RecipeCourseList from "../components/RecipeCourseList.jsx";
+import RecipeCommentsSection from "../components/RecipeCommentsSection.jsx";
 
 export default function Recipe() {
-    const { recipeId } = useParams();
-    const { data: recipe } = useSWR(`/api/recipes/${recipeId}`, fetcher);
+  const [isSimilarRecipesLoading, setIsSimilarRecipesLoading] = useState(false);
 
-    console.log(recipe)
+  const [isSideDishLoading, setIsSideDishLoading] = useState(false);
 
-        if (!recipe) {
-        return <span className="loading loading-dots loading-sm"></span>
+  const { recipeName } = useParams();
+
+  const queryClient = useQueryClient();
+
+  const generateOtherRecommandations = async () => {
+    setIsSimilarRecipesLoading(true);
+
+    try {
+      await queryClient.invalidateQueries(["recipe", recipeName, "similar"]);
+    } finally {
+      setIsSimilarRecipesLoading(false);
     }
+  };
 
+  const generateOtherSideDish = async () => {
+    setIsSideDishLoading(true);
+
+    try {
+      await queryClient.invalidateQueries(["recipe", recipeName, "sideDish"]);
+    } finally {
+      setIsSideDishLoading(false);
+    }
+  };
+
+  const {
+    data: recipe,
+    isPending,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["recipe", recipeName],
+    queryFn: () => getRecipe(recipeName),
+    retry: 0,
+  });
+
+  if (isPending) {
     return (
-        <>
-            <div className="bg-white shadow-sm content-recipe">
-                <h1 className={'text-2xl mb-10'}>{recipe.title}</h1>
-                <div className={' w-full flex flex-row items-start'}>
-                    <RecipeStarsRating recipeId={recipe.id} />
-                </div>
-                <div className={'mt-10 w-full flex flex-row justify-center'}>
-                    <img className={'w-4/5 rounded-2xl'} src={recipe.image} alt={recipe.title} />
-                </div>
-                <div className={'mt-10 mb-6'}>
-                    <h5>Durée de préparation: {recipe.cookingTime} minutes</h5>
-                </div>
-                <div className="divider"></div>
-                <div className={'mt-6'}>
-                    <h4>Ingrédients</h4>
-                    <Ingredient recipeId={recipe.id} />
-                </div>
-                <div className="divider"></div>
-                <div className={'mt-6 w-full'}>
-                    <h4>Instructions</h4>
-                        <Instructions instructions={recipe.instructions} />
-                </div>
-            </div>
-        </>
-    )
-}
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <span className="loading loading-dots loading-lg"></span>
+      </div>
+    );
+  }
 
-function fetcher(url) {
-    return fetch(`http://localhost:3000${url}`).then((r) => r.json());
+  if (isError) {
+    return (
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <span className="text-2xl">{error.message}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="m-8">
+      <header className="mb-10">
+        <h2 className="text-2xl mb-4 flex flex-wrap gap-4 items-center">
+          {recipe.title}
+        </h2>
+      </header>
+
+      <div className="flex flex-col lg:flex-row-reverse gap-8 w-full">
+        <aside className="lg:w-96">
+          <div className="w-full lg:sticky lg:top-10 flex flex-col gap-4">
+            <div className="card shadow-xl rounded-2xl bg-base-100 w-full">
+              <div className="card-body">
+                <h3 className="card-title">Informations</h3>
+
+                <RecipeStarsRating recipeName={recipe.title} />
+
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <span className="badge badge-accent h-8 group">
+                    <CookingPot className="mr-2 w-5 h-5 group-hover:animate-shake" />
+                    {recipe.cookingTime} minutes
+                  </span>
+
+                  <span className="badge badge-accent h-8">
+                    <Users className="mr-2 w-5 h-5" />
+                    {recipe.servings} personnes
+                  </span>
+
+                  <span className="badge badge-accent h-8">
+                    <User className="mr-2 w-5 h-5" />
+                    <span>
+                      By{" "}
+                      <span className="italic">
+                        {recipe.author?.username || "Anomyne"}
+                      </span>
+                    </span>
+                  </span>
+
+                  <RecipeCourseList recipeName={recipe.title} />
+
+                </div>
+              </div>
+            </div>
+
+            <div className="card shadow-xl rounded-2xl bg-base-100 w-full">
+              <div className="card-body">
+                <h3 className="card-title">Ingrédients</h3>
+                <Ingredient recipeName={recipe.title} />
+              </div>
+            </div>
+
+            {/* Accompagnements recommandés */}
+            <div className="card shadow-xl rounded-2xl bg-base-100 w-full">
+              <div className="card-body">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="card-title">Accompagnement possibles</h3>
+                  <button onClick={() => generateOtherSideDish()}>
+                    <RotateCw size={20} />
+                  </button>
+                </div>
+                {isSideDishLoading ? (
+                  <div className="flex-1 flex flex-col justify-center items-center">
+                    <span className="loading loading-dots loading-lg"></span>
+                  </div>
+                ) : (
+                  <RecipeSideDish recipeName={recipe.title} />
+                )}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <main className="flex-1 flex flex-col gap-6">
+          <article className="card shadow-xl rounded-2xl bg-base-100">
+            <div className="card-body">
+              <h3 className="card-title text-3xl">Instructions</h3>
+              <Instructions instructions={recipe.instructions} />
+            </div>
+          </article>
+
+          {/* Recommandations similaires */}
+          <div className="card shadow-xl rounded-2xl bg-base-100 w-full">
+            <div className="card-body">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="card-title">Recommandations</h3>
+                <button onClick={() => generateOtherRecommandations()}>
+                  <RotateCw size={20} />
+                </button>
+              </div>
+              {isSimilarRecipesLoading ? (
+                <div className="flex-1 flex flex-col justify-center items-center">
+                  <span className="loading loading-dots loading-lg"></span>
+                </div>
+              ) : (
+                <SimilarRecipes recipeName={recipe.title} />
+              )}
+            </div>
+          </div>
+
+          {/* Commentaires */}
+          <RecipeCommentsSection recipeName={recipe.title} />
+        </main>
+      </div>
+    </div>
+  );
 }
