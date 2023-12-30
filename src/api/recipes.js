@@ -100,17 +100,47 @@ export function fetchRecipeComments(name) {
 
 /**
  * Post a new comment for the recipe
- * @param {string} name name of the
+ * @param {string} name name of the recipe
+ * @param rating
+ * @param comment
  * @return {Promise<void>}
  */
-export function postRecipeComment(name, rating, comment) {
-
-  console.log("dans recipes.js de react api, name : ", name);
-  console.log("dans recipes.js de react api, rating : ", rating);
-  console.log("dans recipes.js de react api, comment : ", comment);
-  
+export function postRecipeRating(name, rating, comment) {
   return fetcher(`/api/recipes/${name}/comments`, {
     method: "POST",
     body: JSON.stringify({ rating, comment }),
+  });
+}
+
+/**
+ * Toggle recipe favorite state for user
+ * @param {string} name name of the recipe
+ * @return {Promise<void>}
+ */
+export function postToggleFavorite(name) {
+  return fetcher(`/api/recipes/${name}/favorite`, {
+    method: 'PUT'
+  })
+}
+
+/**
+ * Fetch comment responses
+ * @param {name} name name of the recipe
+ * @param {id} id id of the parent comment
+ */
+export function fetchCommentResponses(name, id) {
+  return fetcher(`/api/recipes/${name}/comments/${id}`);
+}
+
+/**
+ * Post comment response
+ * @param {name} name name of the recipe
+ * @param {id} id id of the parent comment
+ * @param {comment} comment comment to post
+ */
+export function postCommentResponse(name, id, comment) {
+  return fetcher(`/api/recipes/${name}/comments/${id}`, {
+    method: "POST",
+    body: JSON.stringify({ comment }),
   });
 }

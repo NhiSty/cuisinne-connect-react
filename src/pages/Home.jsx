@@ -3,20 +3,17 @@ import RecipeCard from "../components/RecipeCard.jsx";
 import { getLastRecipe, getRecipes } from "../api/recipes.js";
 import SeasonRecommandation from "../components/sidebar/SeasonRecommandations.jsx";
 import { useSearchParams } from "react-router-dom";
-import { useMemo } from "react";
 
 function PageContent() {
-  const [searchParams] = useSearchParams();
-  const searchText = useMemo(
-    () => searchParams.get("search") || null,
-    [searchParams]
-  );
-  const isSearching = useMemo(() => searchText?.length > 0, [searchText]);
 
-  const { isPending, isError, error, data } = useQuery({
+  const [searchParams] = useSearchParams();
+
+  const searchText = searchParams.get("search") || null
+  const isSearching = searchText?.length > 0;
+
+  const { isLoading, isError, error, data } = useQuery({
     queryKey: ["recipes", searchText],
     queryFn: () => getRecipes(searchText),
-    placeholderData: keepPreviousData,
     retry: 0,
     staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: searchText?.length > 0,
@@ -28,19 +25,19 @@ function PageContent() {
     placeholderData: keepPreviousData
   });
 
-  if (isPending && isSearching) {
+  if (isLoading && isSearching) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <span className="loading loading-dots loading-lg"></span>
-      </div>
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <span className="loading loading-dots loading-lg"></span>
+        </div>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center">
-        <span>{error.message}</span>
-      </div>
+        <div className="flex-1 flex flex-col justify-center items-center">
+          <span>{error.message}</span>
+        </div>
     );
   }
 
@@ -64,11 +61,11 @@ function PageContent() {
         </>
       );
     }
-    
+
     return (
       <div className="flex flex-col rounded-2xl p-6 bg-white border shadow-sm max-w-screen-lg mx-auto w-full">
-        <h2 className="text-2xl font-bold mb-2">No recipes found</h2>
-        <p className="text-gray-500">Try searching for something else</p>
+        <h2 className="text-2xl font-bold mb-2">Aucune recette trouvée</h2>
+        <p className="text-gray-500">Essayer de faire une recherche</p>
       </div>
     );
   }

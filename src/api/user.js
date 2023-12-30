@@ -1,4 +1,4 @@
-import { fetcher } from "./http";
+import {fetcher} from "./http";
 
 /**
  * @interface User
@@ -14,15 +14,13 @@ import { fetcher } from "./http";
  * @returns {Promise<boolean>} The token of the user
  */
 export async function login(email, password) {
-  const response = await fetcher("/api/auth", {
+  return await fetcher("/api/auth", {
     body: JSON.stringify({
       email,
       password,
     }),
     method: "POST",
   });
-
-  return response;
 }
 
 /**
@@ -30,10 +28,11 @@ export async function login(email, password) {
  * @param {string} username The username of the user
  * @param {string} email The email of the user
  * @param {string} password The password of the user
+ * @param confirmation
  * @returns {Promise<boolean>} The token of the user
  */
 export async function register(username, email, password, confirmation) {
-  const response = await fetcher("/api/auth/register", {
+  return await fetcher("/api/auth/register", {
     body: JSON.stringify({
       username,
       email,
@@ -42,8 +41,6 @@ export async function register(username, email, password, confirmation) {
     }),
     method: "POST",
   });
-
-  return response;
 }
 
 /**
@@ -51,11 +48,9 @@ export async function register(username, email, password, confirmation) {
  * @returns {Promise<void>} The token of the user
  */
 export async function logout() {
-  const response = await fetcher("/api/auth", {
+  return await fetcher("/api/auth", {
     method: "DELETE",
   });
-
-  return response;
 }
 
 /**
@@ -63,9 +58,43 @@ export async function logout() {
  * @returns {Promise<User>} The token of the user
  */
 export async function fetchUser() {
-  const response = await fetcher("/api/auth", {
+  return await fetcher("/api/auth", {
     method: "GET",
   });
+}
 
-  return response;
+/**
+ * Fetch user favorites recipes
+ * @returns {Promise<any[]>} The favorites recipes of the user
+ */
+export async function fetchUserFavorites() {
+  return await fetcher("/api/user/favorites", {
+    method: "GET",
+  });
+}
+
+/**
+ * Fetch user settings
+ * @returns {Promise<any>} The settings of the user
+ */
+export async function fetchUserSettings() {
+  return await fetcher("/api/user/settings");
+}
+
+/**
+ * Update user settings
+ * @param {string[]} diets The diet of the user
+ * @param {string[]} allergies The allergies of the user
+ * @param {string[]} preferences The preferences of the user
+ * @returns {Promise<void>}
+ */
+export async function updateUserSettings(diets = [], allergies = [], preferences = []) {
+  return await fetcher("/api/user/settings", {
+    body: JSON.stringify({
+      diets,
+      allergies,
+      preferences,
+    }),
+    method: "POST",
+  });
 }

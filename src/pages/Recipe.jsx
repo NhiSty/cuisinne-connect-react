@@ -4,21 +4,28 @@ import RecipeStarsRating from "../components/RecipeStarsRating.jsx";
 import Instructions from "../components/InstructionStep.jsx";
 import Ingredient from "../components/Ingredients.jsx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getRecipe } from "../api/recipes.js";
+import {fetchRecipeSideDish, fetchSimilarRecipes, getRecipe, postToggleFavorite} from "../api/recipes.js";
 import {
   CookingPot,
-  Flame,
   User,
   Users,
   RotateCw,
-  ShoppingBag,
+  Heart,
 } from "lucide-react";
 import SimilarRecipes from "../components/SimilarRecipes.jsx";
 import RecipeSideDish from "../components/RecipeSideDish.jsx";
 import RecipeCourseList from "../components/RecipeCourseList.jsx";
 import RecipeCommentsSection from "../components/RecipeCommentsSection.jsx";
 
+import { useUser } from "../hooks/auth.js";
+import classNames from "classnames";
+import { useMutation } from "@tanstack/react-query";
+
+
 export default function Recipe() {
+
+  const { data: user } = useUser();
+
   const [isSimilarRecipesLoading, setIsSimilarRecipesLoading] = useState(false);
 
   const [isSideDishLoading, setIsSideDishLoading] = useState(false);
@@ -27,23 +34,40 @@ export default function Recipe() {
 
   const queryClient = useQueryClient();
 
+  const {
+    data: sideDishData,
+    isPending: isSideDishPending,
+    refetch: refetchSideDish,
+  } = useQuery({
+    queryKey: ["recipe", recipeName, "sideDish"],
+    queryFn: () => fetchRecipeSideDish(recipeName),
+  });
+
+  const generateOtherSideDish = async () => {
+    setIsSideDishLoading(true);
+    try {
+      await refetchSideDish();
+    } finally {
+      setIsSideDishLoading(false);
+    }
+  };
+
+  const {
+    data: similarRecipesData,
+    isPending: isSimilarRecipesPending,
+    refetch: refetchSimilarRecipes,
+  } = useQuery({
+    queryKey: ["recipe", recipeName, "similar"],
+    queryFn: () => fetchSimilarRecipes(recipeName),
+  });
+
   const generateOtherRecommandations = async () => {
     setIsSimilarRecipesLoading(true);
 
     try {
-      await queryClient.invalidateQueries(["recipe", recipeName, "similar"]);
+      await refetchSimilarRecipes();
     } finally {
       setIsSimilarRecipesLoading(false);
-    }
-  };
-
-  const generateOtherSideDish = async () => {
-    setIsSideDishLoading(true);
-
-    try {
-      await queryClient.invalidateQueries(["recipe", recipeName, "sideDish"]);
-    } finally {
-      setIsSideDishLoading(false);
     }
   };
 
@@ -56,6 +80,13 @@ export default function Recipe() {
     queryKey: ["recipe", recipeName],
     queryFn: () => getRecipe(recipeName),
     retry: 0,
+  });
+
+  const {mutateAsync: toggleFavorite} = useMutation({
+    mutationFn: () => postToggleFavorite(recipeName),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["recipe", recipeName]);
+    },
   });
 
   if (isPending) {
@@ -74,11 +105,30 @@ export default function Recipe() {
     );
   }
 
+  const renderFavoriteButton = () => {
+    if (!user) return null;
+
+    const isFavorites = recipe.isFavorite;
+
+    return (
+        <button className={classNames("btn btn-circle btn-ghost", {
+          "hover:bg-red-200": isFavorites
+        })} onClick={() => toggleFavorite()}>
+          <Heart
+              className={classNames("w-6 h-6", {
+                "fill-red-500 text-red-500": isFavorites,
+              })}
+          />
+        </button>
+    );
+  };
+
   return (
     <div className="m-8">
       <header className="mb-10">
         <h2 className="text-2xl mb-4 flex flex-wrap gap-4 items-center">
           {recipe.title}
+          {renderFavoriteButton()}
         </h2>
       </header>
 
@@ -135,11 +185,11 @@ export default function Recipe() {
                   </button>
                 </div>
                 {isSideDishLoading ? (
-                  <div className="flex-1 flex flex-col justify-center items-center">
-                    <span className="loading loading-dots loading-lg"></span>
-                  </div>
+                    <div className="flex-1 flex flex-col justify-center items-center">
+                      <span className="loading loading-dots loading-lg"></span>
+                    </div>
                 ) : (
-                  <RecipeSideDish recipeName={recipe.title} />
+                    <RecipeSideDish recipeName={recipe.title} sideDishData={sideDishData} />
                 )}
               </div>
             </div>
@@ -168,7 +218,7 @@ export default function Recipe() {
                   <span className="loading loading-dots loading-lg"></span>
                 </div>
               ) : (
-                <SimilarRecipes recipeName={recipe.title} />
+                <SimilarRecipes recipeName={recipe.title} similarRecipesData={similarRecipesData} />
               )}
             </div>
           </div>

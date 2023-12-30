@@ -10,11 +10,11 @@ export default function RecipeCard({ recipe }) {
           <h2 className="text-left font-bold text-xl">{recipe.title}</h2>
           <p>{recipe.description}</p>
         </div>
-        <div className="absolute top-2 right-2 text-sm text-gray-500">
-          {new Date(recipe.createdAt).toLocaleDateString()}
+        { recipe.createdAt && <div className="absolute top-2 right-2 text-sm text-gray-500">
+            {new Date(recipe.createdAt).toLocaleDateString()}
         </div>
+        }
       </Link>
     </div>
   );
-  
 }

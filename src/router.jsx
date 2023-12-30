@@ -5,7 +5,8 @@ import Register from "./pages/Register.jsx";
 import Layout from "./components/Layout.jsx";
 import Recipe from "./pages/Recipe.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
-import Profile from "./pages/Profile.jsx";
+import MyFavorites from "./pages/MyFavorites.jsx";
+import Settings from "./pages/Settings.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,9 +29,18 @@ const router = createBrowserRouter([
         element: <Recipe />,
       },
       {
-        path: "/profile",
-        element: <Profile />,
-      },
+        path: '/user/',
+        children: [
+          {
+            path: '/user/favorites',
+            element: <MyFavorites/>
+          },
+          {
+            path: '/user/settings',
+            element: <Settings/>
+          }
+        ]
+      }
     ],
     errorElement: <NotFoundPage />,
   },
