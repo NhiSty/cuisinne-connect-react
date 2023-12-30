@@ -1,9 +1,0 @@
-.content-list-recipe {
-    width: 55%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    border-radius: var(--rounded-box, 1rem);
-    padding: 1.5em;
-}

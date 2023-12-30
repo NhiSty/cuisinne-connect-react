@@ -1,42 +1,45 @@
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
+import { getRecipeRating } from "../api/recipes";
+import classNames from "classnames";
 
-export default function RecipeStarsRating({ recipeId }) {
-    const { data: rating, isLoading } = useSWR(`/api/recipes/${recipeId}/rating`, fetcher);
+export default function RecipeStarsRating({ recipeName }) {
+  const { data, isPending } = useQuery({
+    queryKey: ["recipe", recipeName, "rating"],
+    queryFn: () => getRecipeRating(recipeName),
+  });
 
-    if (isLoading) {
-        return <span className="loading loading-dots loading-sm"></span>
-    }
+  if (isPending) {
+    return <span className="loading loading-dots loading-sm"></span>;
+  }
 
-    if (!rating) {
-        return <p>Pas encore évalué</p>
-    }
-
-    const checkStar = (starIndex) => {
-        return rating >= starIndex;
-
-    }
-
+  if (!data?.rating) {
     return (
-        <div className={'flex flex-row items-center'}>
-            <div className="rating rating-sm rating-half mr-2">
-                <input type="radio" name="rating-10" className="rating-hidden" />
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-1" checked={checkStar(0.1)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-2" checked={checkStar(1)} />
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-1" checked={checkStar(1.1)} />
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-2" checked={checkStar(2)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-1" checked={checkStar(2.1)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-2" checked={checkStar(3)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-1" checked={checkStar(3.1)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-2" checked={checkStar(4)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-1" checked={checkStar(4.1)}/>
-                <input type="radio" name="rating-10" className="bg-gray-800 mask mask-star-2 mask-half-2" checked={checkStar(5)}/>
-            </div>
-            <p>{rating}/5</p>
+        <p className="text-gray-600 text-sm mx-auto mb-2">Pas encore évalué</p>
+    );
+  }
+
+  return (
+      <div className="flex flex-row items-center mx-auto">
+        <div
+            className="rating rating-half mr-2 tooltip tooltip-bottom"
+            data-tip={`${data.rating}/5`}
+        >
+          {[...Array(11)].map((_, index) => (
+              <input
+                  key={index}
+                  type="radio"
+                  name="rating-10"
+                  className={classNames({
+                    "rating-hidden": index === 0,
+                    "bg-orange-400 mask-star-2 starlg": index > 0,
+                    "mask-half-2": index % 2 === 0 && index > 0,
+                    "mask-half-1": index % 2 !== 0,
+                  })}
+                  checked={data.rating == index / 2}
+                  disabled={true}
+              />
+          ))}
         </div>
-    )
-}
-
-
-function fetcher(url) {
-    return fetch(`http://localhost:3000${url}`).then((r) => r.json());
+      </div>
+  );
 }
