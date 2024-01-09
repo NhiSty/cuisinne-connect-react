@@ -32,13 +32,13 @@ export default function RecipeComment({ recipeName, rating }) {
                 className="rating rating-sm tooltip tooltip-bottom"
                 data-tip={`${rating.rating}/5`}
               >
-                {[...Array(5)].map((_, index) => (
+                {[...Array(6)].map((_, index) => (
                   <input
                     key={index}
                     type="radio"
-                    name="rating-5"
-                    className="cursor-default bg-orange-400 mask mask-star-2"
-                    defaultChecked={rating.rating == index+1}
+                    name={"comment-rating-" + rating.id}
+                    className={classNames({ "rating-hidden": index === 0, "cursor-default bg-orange-400 mask mask-star-2": index > 0 })}
+                    checked={rating.rating == index}
                     disabled={true}
                   />
                 ))}

@@ -37,7 +37,7 @@ export default function NewRatingForm({respondTo = null, children = undefined, r
           <input
             key={index}
             type="radio"
-            name="rating-5"
+            name="new-rating-form"
             className={classNames({ "rating-hidden": index === 0, "bg-orange-400 mask mask-star-2": index > 0 })}
             onChange={() => setValue("rating", index)}
             value={watch("rating") === index}
