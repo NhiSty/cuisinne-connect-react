@@ -9,19 +9,19 @@ export default function MyFavorites() {
     })
 
     if (isPending) {
-      return (
-        <div className="flex-1 flex flex-col justify-center items-center">
-          <span className="loading loading-dots loading-lg"></span>
-        </div>
-      );
+        return (
+            <div className="flex-1 flex flex-col justify-center items-center">
+                <span className="loading loading-dots loading-lg"></span>
+            </div>
+        );
     }
 
     if (isError) {
-      return (
-        <div className="flex-1 flex flex-col justify-center items-center">
-          <span className="text-2xl">{error.message}</span>
-        </div>
-      );
+        return (
+            <div className="flex-1 flex flex-col justify-center items-center">
+                <span className="text-2xl">{error.message}</span>
+            </div>
+        );
     }
 
     return <div className="m-8">

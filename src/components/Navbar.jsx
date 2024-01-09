@@ -1,23 +1,44 @@
 import { Link, useNavigate } from "react-router-dom";
+import 'regenerator-runtime/runtime';
 import botOpenImg from "../assets/botOpen.png";
 import { useLogout, useUser } from "../hooks/auth.js";
-import { UserIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { UserIcon, Mic } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+
 
 export default function Navbar() {
     const { data, isPending } = useUser();
     const { mutate: logout } = useLogout();
     const navigate = useNavigate()
-
+    const { transcript, finalTranscript, listening, resetTranscript } = useSpeechRecognition();
     const [search, setSearch] = useState("");
 
     const onSearchDebounced = useCallback(() => {
         let value = search.trim();
         if (value) {
+            setSearch("")
             return navigate(`/?search=${value}`, { replace: true })
         }
         navigate('/', { replace: true })
     }, [search]);
+
+    const startListening = () => {
+        SpeechRecognition.startListening({ continuous: true });
+    };
+
+    const stopListening = async () => {
+        await SpeechRecognition.stopListening()
+
+        setSearch(finalTranscript)
+        setTimeout(onSearchDebounced, 10)
+        resetTranscript();
+    };
+
+    useEffect(() => {
+        setSearch(transcript)
+    }, [transcript]);
+
 
     const renderUserMenu = () => {
         if (isPending) {
@@ -89,9 +110,17 @@ export default function Navbar() {
                         type="text"
                         placeholder="Search"
                         className="input bg-white input-bordered md:w-auto h-9"
+                        value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
+                <button
+                    type="button"
+                    onClick={listening ? stopListening : startListening}
+                    className={`ml-2 p-2 rounded-full ${listening ? 'text-red-500' : 'text-black'}`}
+                >
+                    <Mic />
+                </button>
             </form>
             {renderUserMenu()}
         </nav>
