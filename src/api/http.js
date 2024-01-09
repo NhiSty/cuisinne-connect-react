@@ -15,6 +15,7 @@ export async function fetcher(url, options) {
       ...options,
       headers: {
         "Content-Type": "application/json",
+        "Accept-Language": localStorage.getItem("lang") ?? "fr",
         ...headers,
       },
     });
