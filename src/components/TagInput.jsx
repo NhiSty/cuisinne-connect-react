@@ -11,8 +11,14 @@ export function TagInput({ tags = [], onChange, id, name, placeholder }) {
   };
 
   const onKeyDown = (event) => {
-    if (event.key === "Enter") {
-      // Prevent the browser to emit a "on submit" event in forms
+    const currentValue = event.target.value;
+
+    if (
+        // Prevent the browser to emit a "on submit" event in forms
+        event.key === "Enter" ||
+        // Prevent to exit the form if there is a value in it
+        (event.key === "Tab" && !!currentValue)
+    ) {
       event.preventDefault();
     }
   };
@@ -20,7 +26,8 @@ export function TagInput({ tags = [], onChange, id, name, placeholder }) {
   const onKeyUp = (event) => {
     const currentValue = event.target.value;
 
-    if (event.key === "Enter" && currentValue !== "") {
+    if ((event.key === "Enter" || event.key === "Tab") && currentValue !== "") {
+      event.preventDefault();
       if (!tags.includes(currentValue)) {
         onChange(tags.concat([currentValue]));
       }
