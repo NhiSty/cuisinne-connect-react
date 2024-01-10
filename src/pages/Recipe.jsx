@@ -11,6 +11,7 @@ import {
   Users,
   RotateCw,
   Heart,
+    Apple,
 } from "lucide-react";
 import SimilarRecipes from "../components/SimilarRecipes.jsx";
 import RecipeSideDish from "../components/RecipeSideDish.jsx";
@@ -31,6 +32,8 @@ export default function Recipe() {
   const [isSideDishLoading, setIsSideDishLoading] = useState(false);
 
   const { recipeName } = useParams();
+
+  console.log({recipeName})
 
   const queryClient = useQueryClient();
 
@@ -145,17 +148,17 @@ export default function Recipe() {
 
                   <div className="flex flex-wrap gap-2 justify-center">
                   <span className="badge badge-accent h-8 group">
-                    <CookingPot className="mr-2 w-5 h-5 group-hover:animate-shake" />
+                    <CookingPot className="mr-2 w-5 h-5 group-hover:animate-shake"/>
                     {recipe.cookingTime} minutes
                   </span>
 
                     <span className="badge badge-accent h-8">
-                    <Users className="mr-2 w-5 h-5" />
+                    <Users className="mr-2 w-5 h-5"/>
                       {recipe.servings} personnes
                   </span>
 
                     <span className="badge badge-accent h-8">
-                    <User className="mr-2 w-5 h-5" />
+                    <User className="mr-2 w-5 h-5"/>
                     <span>
                       By{" "}
                       <span className="italic">
@@ -164,7 +167,12 @@ export default function Recipe() {
                     </span>
                   </span>
 
-                    <RecipeCourseList recipeName={recipe.title} />
+                    <span className="badge badge-accent h-8">
+                    <Apple className="mr-2 w-5 h-5"/>
+                      {recipe.calories ? recipe.calories : 'N/A'} kcal
+                  </span>
+
+                    <RecipeCourseList recipeName={recipe.title}/>
 
                   </div>
                 </div>
@@ -172,7 +180,7 @@ export default function Recipe() {
 
               <div className="card shadow-xl rounded-2xl bg-base-100 w-full">
                 <div className="card-body">
-                  <h3 className="card-title">Ingrédients</h3>
+                <h3 className="card-title">Ingrédients</h3>
                   <Ingredient recipeName={recipe.title} />
                 </div>
               </div>
