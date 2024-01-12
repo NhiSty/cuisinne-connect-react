@@ -18,6 +18,16 @@ export async function getRecipes(value) {
   };
 }
 
+export async function getRecipesByCalories(calories) {
+    const response = await fetcher(`/api/recipes-by-categories?searchByCalories=${calories}`, {
+        method: "GET",
+    });
+
+  console.log('call', response)
+
+    return response.items
+}
+
 /**
  * Get last recipe of db
  * @returns {Promise<any[]>} returns a promise with the recipe
@@ -29,7 +39,7 @@ export function getLastRecipe() {
 
 /**
  * Get a recipe from API
- * @param {number} name name of the recipe
+ * @param {string} name name of the recipe
  * @returns {Promise<any>}
  */
 export function getRecipe(name) {
