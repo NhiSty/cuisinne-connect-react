@@ -167,11 +167,6 @@ export default function Recipe() {
                     </span>
                   </span>
 
-                    <span className="badge badge-accent h-8">
-                    <Apple className="mr-2 w-5 h-5"/>
-                      {recipe.calories ? recipe.calories : 'N/A'} kcal
-                  </span>
-
                     <RecipeCourseList recipeName={recipe.title}/>
 
                   </div>
